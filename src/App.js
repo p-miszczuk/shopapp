@@ -1,26 +1,55 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Redirect,
+  useHistory
+} from "react-router-dom";
+import "./App.css";
+import { Button, Grid } from "@material-ui/core";
+import Login from "./layouts/Login";
+
+const fakeAuth = {
+  state: false,
+  in(cb) {
+    fakeAuth.state = true;
+    setTimeout(cb, 100);
+  }
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Route path="/login">
+        <Login useHistory={useHistory} fakeAuth={fakeAuth} />
+      </Route>
+      <PrivateRoute path="/in">
+        <Content />
+      </PrivateRoute>
+    </Router>
   );
 }
+
+const Content = () => <div>Here content</div>;
+
+const PrivateRoute = ({ children, ...rest }) => {
+  return (
+    <Route
+      {...rest}
+      render={({ location }) => {
+        return fakeAuth.state ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: location }
+            }}
+          />
+        );
+      }}
+    />
+  );
+};
 
 export default App;
