@@ -32,7 +32,7 @@ const Login = ({ fakeAuth, useHistory }) => {
       justify={"center"}
       style={{ minHeight: "100vh" }}
     >
-      <Grid item xs={6}>
+      <Grid item xs={10} sm={9} lg={7}>
         <form onSubmit={handleSubmit}>
           <MainInput
             id={"name"}

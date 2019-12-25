@@ -5,9 +5,14 @@ import {
   Redirect,
   useHistory
 } from "react-router-dom";
+import { createStore } from "redux";
+import { Provider } from "react-redux";
+import rootReducer from "./reducers/store";
 import "./App.css";
-import { Button, Grid } from "@material-ui/core";
 import Login from "./layouts/Login";
+import Content from "./layouts/Content";
+
+const store = createStore(rootReducer);
 
 const fakeAuth = {
   state: false,
@@ -19,18 +24,18 @@ const fakeAuth = {
 
 function App() {
   return (
-    <Router>
-      <Route path="/login">
-        <Login useHistory={useHistory} fakeAuth={fakeAuth} />
-      </Route>
-      <PrivateRoute path="/in">
-        <Content />
-      </PrivateRoute>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <PrivateRoute path="/in">
+          <Content />
+        </PrivateRoute>
+        <Route path="/login">
+          <Login useHistory={useHistory} fakeAuth={fakeAuth} />
+        </Route>
+      </Router>
+    </Provider>
   );
 }
-
-const Content = () => <div>Here content</div>;
 
 const PrivateRoute = ({ children, ...rest }) => {
   return (
