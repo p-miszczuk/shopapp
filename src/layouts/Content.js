@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
 const Content = ({ list, deleteList, addList }) => {
   const [checked, setChecked] = useState([]);
   const [dialog, setDialog] = useState({ open: false, value: null });
+  const [showTasks, setShowTasks] = useState(null);
   const classes = useStyles();
 
   const handleChecked = event => {
@@ -44,8 +45,12 @@ const Content = ({ list, deleteList, addList }) => {
   };
 
   const handleEdit = event => {
-    const aa = event.currentTarget.attributes.value.value;
-    console.log({ aa });
+    const name = event.currentTarget.attributes.value.value;
+    const findTasksList = list.find(item => item.name === name);
+    if (!!findTasksList) {
+      setChecked([]);
+      setShowTasks(findTasksList.list);
+    }
   };
 
   const handleDeleteList = event => {
@@ -103,12 +108,21 @@ const Content = ({ list, deleteList, addList }) => {
     return fullDate;
   };
 
+  const handleReturn = () => {
+    checked.length && setChecked([]);
+    setShowTasks(null);
+  };
+
   return (
     <Grid container spacing={0} justify={"center"} alignItems={"center"}>
       <Grid item xs={11} md={10} lg={9} xl={7} className={classes.margin}>
-        <Header handleSelect={handleSelect} />
+        <Header
+          handleSelect={handleSelect}
+          tasks={!!showTasks}
+          returnToList={handleReturn}
+        />
         <List
-          list={list}
+          list={!!showTasks ? showTasks : list}
           handleEdit={handleEdit}
           handleChecked={handleChecked}
           handleDeleteList={handleDeleteList}

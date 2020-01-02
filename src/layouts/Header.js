@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { IconButton, Menu, MenuItem } from "@material-ui/core";
+import { IconButton, Menu, MenuItem, Fab } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 const options = [
   { name: "New list", key: "newList" },
@@ -25,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Header = ({ handleSelect, handleDeleteList }) => {
+const Header = ({ handleSelect, tasks, returnToList }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const handleClick = event => {
@@ -34,11 +35,18 @@ const Header = ({ handleSelect, handleDeleteList }) => {
 
   const handleClose = value => {
     setAnchorEl(null);
-    handleSelect(value);
+    typeof value === "string" && handleSelect(value);
   };
 
   return (
     <div className={classes.headerMenu}>
+      {tasks && (
+        <div>
+          <Fab size={"small"} color={"primary"} onClick={returnToList}>
+            <ArrowBackIcon />
+          </Fab>
+        </div>
+      )}
       <div className={classes.title}>Shopping</div>
       <div>
         <IconButton onClick={handleClick}>

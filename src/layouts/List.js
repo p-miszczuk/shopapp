@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { List, ListItem, Checkbox, ListItemText, Fab } from "@material-ui/core";
-// import EditIcon from "@material-ui/icons/Edit";
+import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -22,25 +22,36 @@ const ListItems = ({
   return (
     <List>
       {list.map(item => (
-        <ListItem key={item.name}>
+        <ListItem key={item.name || item.id}>
           <Checkbox
             edge="start"
-            value={item.name}
+            value={item.name || item.task}
             onClick={handleChecked}
-            checked={checked.indexOf(item.name) !== -1}
+            checked={checked.indexOf(item.name || item.task) !== -1}
           />
           <ListItemText
-            value={item.name}
-            id={item.name}
-            primary={`${item.name}`}
-            secondary={`${item.date}`}
+            value={item.name || item.task}
+            id={item.name || item.id}
+            primary={`${item.name || item.task}`}
+            secondary={`${item.date || ""}`}
             className={classes.textEdit}
             onClick={handleEdit}
           />
+          {!!item.task && (
+            <Fab
+              style={{ marginRight: "10px" }}
+              size={"small"}
+              color={"secondary"}
+              value={item.id}
+              // onClick={handleEditList}
+            >
+              <EditIcon />
+            </Fab>
+          )}
           <Fab
             size={"small"}
             color={"secondary"}
-            value={item.name}
+            value={item.name || item.id}
             onClick={handleDeleteList}
           >
             <DeleteIcon />
