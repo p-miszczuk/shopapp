@@ -2,35 +2,24 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import Header from "./Header";
 import List from "./List";
-import MainButton from "../components/buttons/MainButton";
-import { deleteList } from "../reducers/tasks/actions";
+import DialogWindow from "./Dialog";
+import { addList, deleteList } from "../reducers/tasks/actions";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Grid,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle
-} from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   margin: {
     marginBottom: theme.spacing(2),
     marginTop: theme.spacing(2)
-  },
-  dialogSize: {
-    width: "250px"
   }
 }));
 
-const Content = ({ list, deleteList }) => {
+const Content = ({ list, deleteList, addList }) => {
   const [checked, setChecked] = useState([]);
   const [dialog, setDialog] = useState({ open: false, value: null });
   const classes = useStyles();
 
   const handleChecked = event => {
-    console.log(event.target.value);
     const findIndex = checked.indexOf(event.target.value);
     const newChecked = [...checked];
 
@@ -49,6 +38,8 @@ const Content = ({ list, deleteList }) => {
       setChecked([]);
     } else if (value === "deleteChecked") {
       setDialog({ open: true, value: checked });
+    } else if (value === "newList") {
+      setDialog({ open: true, value: value });
     }
   };
 
@@ -58,14 +49,15 @@ const Content = ({ list, deleteList }) => {
   };
 
   const handleDeleteList = event => {
-    console.log("You want to delete: ", event.currentTarget.value);
+    // console.log("You want to delete: ", event.currentTarget.value);
     setDialog({ open: true, value: event.currentTarget.value });
   };
 
   const handleCloseDialog = event => {
     const target = event.currentTarget.value;
     if (target === "agree") {
-      if (typeof dialog.value === "string") {
+      if (dialog.value === "newList") {
+      } else if (typeof dialog.value === "string") {
         const findItem = list.find(item => item.name === dialog.value);
         deleteList([findItem.id]);
       } else {
@@ -76,6 +68,39 @@ const Content = ({ list, deleteList }) => {
       }
     }
     setDialog({ open: false, value: null });
+  };
+
+  //add new list
+  const handleAddList = value => {
+    if (typeof value === "string" && !!value) {
+      const lastIndex = list[list.length - 1];
+
+      const newListObject = {
+        id: Number(lastIndex.id) + 1,
+        name: value,
+        list: [],
+        date: setDate()
+      };
+
+      addList(newListObject);
+    }
+
+    setDialog({ open: false, value: null });
+  };
+
+  const setDate = () => {
+    const date = new Date();
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    const fullDate =
+      (day < 9 ? "0" + day : day) +
+      "/" +
+      (month < 9 ? "0" + month : month) +
+      "/" +
+      year;
+    return fullDate;
   };
 
   return (
@@ -90,30 +115,12 @@ const Content = ({ list, deleteList }) => {
           checked={checked}
         />
       </Grid>
-      <Dialog open={dialog.open} onClose={handleCloseDialog}>
-        <DialogTitle>Confirm window</DialogTitle>
-        <DialogContent className={classes.dialogSize}>
-          <DialogContentText>
-            Do you want to delete {checked.length > 1 ? "items" : "item"}?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <MainButton
-            autoFocus
-            onClick={handleCloseDialog}
-            color={"primary"}
-            text={"Disagree"}
-            value={"disagree"}
-          />
-          <MainButton
-            autoFocus
-            onClick={handleCloseDialog}
-            color={"primary"}
-            text={"Agree"}
-            value={"agree"}
-          />
-        </DialogActions>
-      </Dialog>
+      <DialogWindow
+        dialog={dialog}
+        handleCloseDialog={handleCloseDialog}
+        handleAddList={handleAddList}
+        checked={checked}
+      />
     </Grid>
   );
 };
@@ -123,7 +130,8 @@ const mapStateToProps = ({ reducer: { list } }) => ({
 });
 
 const mapDispatchToProps = {
-  deleteList
+  deleteList,
+  addList
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Content);
