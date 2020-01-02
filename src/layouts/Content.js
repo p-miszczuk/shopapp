@@ -47,6 +47,8 @@ const Content = ({ list, deleteList }) => {
       setChecked(newChecked);
     } else if (value === "deselectAll") {
       setChecked([]);
+    } else if (value === "deleteChecked") {
+      setDialog({ open: true, value: checked });
     }
   };
 
@@ -63,8 +65,15 @@ const Content = ({ list, deleteList }) => {
   const handleCloseDialog = event => {
     const target = event.currentTarget.value;
     if (target === "agree") {
-      const findItem = list.find(item => item.name === dialog.value);
-      deleteList([findItem.id]);
+      if (typeof dialog.value === "string") {
+        const findItem = list.find(item => item.name === dialog.value);
+        deleteList([findItem.id]);
+      } else {
+        const findItems = list
+          .filter(item => dialog.value.includes(item.name))
+          .map(item => item.id);
+        deleteList(findItems);
+      }
     }
     setDialog({ open: false, value: null });
   };
@@ -84,7 +93,9 @@ const Content = ({ list, deleteList }) => {
       <Dialog open={dialog.open} onClose={handleCloseDialog}>
         <DialogTitle>Confirm window</DialogTitle>
         <DialogContent className={classes.dialogSize}>
-          <DialogContentText>Dialog Content</DialogContentText>
+          <DialogContentText>
+            Do you want to delete {checked.length > 1 ? "items" : "item"}?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <MainButton

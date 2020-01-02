@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Header = ({ handleSelect }) => {
+const Header = ({ handleSelect, handleDeleteList }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const handleClick = event => {

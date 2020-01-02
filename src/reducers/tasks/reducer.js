@@ -36,9 +36,7 @@ export const reducer = (state = initialState, action) => {
     case DELETE_LIST:
       return {
         ...state,
-        list: state.list.filter(item =>
-          action.payload.find(item2 => item2 !== item.id)
-        )
+        list: state.list.filter(item => !action.payload.includes(item.id))
       };
     case ADD_TASK:
       return {
