@@ -1,6 +1,6 @@
 import React from "react";
 import { List, ListItem, Checkbox, ListItemText, Fab } from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
+import InfoIcon from "@material-ui/icons/Info";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -19,6 +19,7 @@ const ListItems = ({
   checked
 }) => {
   const classes = useStyles();
+  // console.log("lista", list);
   return (
     <List>
       {list.map(item => (
@@ -27,7 +28,7 @@ const ListItems = ({
             edge="start"
             value={item.name || item.task}
             onClick={handleChecked}
-            checked={checked.indexOf(item.name || item.task) !== -1}
+            checked={checked.indexOf(item.name || item.id) !== -1}
           />
           <ListItemText
             value={item.name || item.task}
@@ -45,7 +46,7 @@ const ListItems = ({
               value={item.id}
               // onClick={handleEditList}
             >
-              <EditIcon />
+              <InfoIcon />
             </Fab>
           )}
           <Fab

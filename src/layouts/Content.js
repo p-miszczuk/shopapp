@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import Header from "./Header";
 import List from "./List";
 import DialogWindow from "./Dialog";
-import { addList, deleteList } from "../reducers/tasks/actions";
+import { addList, deleteList, deleteTask } from "../reducers/tasks/actions";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 
@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Content = ({ list, deleteList, addList }) => {
+const Content = ({ list, deleteList, addList, deleteTask }) => {
   const [checked, setChecked] = useState([]);
   const [dialog, setDialog] = useState({ open: false, value: null });
   const [showTasks, setShowTasks] = useState(null);
@@ -33,7 +33,16 @@ const Content = ({ list, deleteList, addList }) => {
   const handleSelect = value => {
     if (value === "selectAll") {
       let newChecked = [];
-      list.forEach(item => newChecked.push(item.name));
+      if (!!showTasks) {
+        list.map(item => {
+          if (item.id === showTasks) {
+            item.list.forEach(elem => newChecked.push(elem.id));
+          }
+          return item;
+        });
+      } else {
+        list.forEach(item => newChecked.push(item.name));
+      }
       setChecked(newChecked);
     } else if (value === "deselectAll") {
       setChecked([]);
@@ -49,7 +58,7 @@ const Content = ({ list, deleteList, addList }) => {
     const findTasksList = list.find(item => item.name === name);
     if (!!findTasksList) {
       setChecked([]);
-      setShowTasks(findTasksList.list);
+      setShowTasks(findTasksList.id);
     }
   };
 
@@ -61,7 +70,20 @@ const Content = ({ list, deleteList, addList }) => {
   const handleCloseDialog = event => {
     const target = event.currentTarget.value;
     if (target === "agree") {
-      if (dialog.value === "newList") {
+      if (!!showTasks) {
+        const currentList = list.find(item => item.id === showTasks);
+        let tasks = null;
+        if (typeof dialog.value === "string") {
+          tasks = currentList.list.filter(
+            item => item.id !== Number(dialog.value)
+          );
+        } else {
+          tasks = currentList.list.filter(
+            item => !dialog.value.includes(item.id)
+          );
+        }
+        console.log(tasks, dialog.value);
+        deleteTask({ tasks, listId: showTasks });
       } else if (typeof dialog.value === "string") {
         const findItem = list.find(item => item.name === dialog.value);
         deleteList([findItem.id]);
@@ -113,6 +135,16 @@ const Content = ({ list, deleteList, addList }) => {
     setShowTasks(null);
   };
 
+  const getTasksList = () => {
+    const currentList = list.find(item => item.id === showTasks);
+
+    if (currentList.list.length > 0) {
+      return currentList.list;
+    }
+
+    return [];
+  };
+
   return (
     <Grid container spacing={0} justify={"center"} alignItems={"center"}>
       <Grid item xs={11} md={10} lg={9} xl={7} className={classes.margin}>
@@ -122,7 +154,7 @@ const Content = ({ list, deleteList, addList }) => {
           returnToList={handleReturn}
         />
         <List
-          list={!!showTasks ? showTasks : list}
+          list={!!showTasks ? getTasksList() : list}
           handleEdit={handleEdit}
           handleChecked={handleChecked}
           handleDeleteList={handleDeleteList}
@@ -145,7 +177,8 @@ const mapStateToProps = ({ reducer: { list } }) => ({
 
 const mapDispatchToProps = {
   deleteList,
-  addList
+  addList,
+  deleteTask
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Content);
