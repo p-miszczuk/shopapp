@@ -3,7 +3,12 @@ import { connect } from "react-redux";
 import Header from "./Header";
 import List from "./List";
 import DialogWindow from "./Dialog";
-import { addList, deleteList, deleteTask } from "../reducers/tasks/actions";
+import {
+  addList,
+  deleteList,
+  addTask,
+  deleteTask
+} from "../reducers/tasks/actions";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 
@@ -14,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Content = ({ list, deleteList, addList, deleteTask }) => {
+const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
   const [checked, setChecked] = useState([]);
   const [dialog, setDialog] = useState({ open: false, value: null });
   const [showTasks, setShowTasks] = useState(null);
@@ -36,7 +41,7 @@ const Content = ({ list, deleteList, addList, deleteTask }) => {
       if (!!showTasks) {
         list.map(item => {
           if (item.id === showTasks) {
-            item.list.forEach(elem => newChecked.push(elem.id));
+            item.list.forEach(elem => newChecked.push(elem.id.toString()));
           }
           return item;
         });
@@ -79,10 +84,9 @@ const Content = ({ list, deleteList, addList, deleteTask }) => {
           );
         } else {
           tasks = currentList.list.filter(
-            item => !dialog.value.includes(item.id)
+            item => !dialog.value.includes(item.id.toString())
           );
         }
-        console.log(tasks, dialog.value);
         deleteTask({ tasks, listId: showTasks });
       } else if (typeof dialog.value === "string") {
         const findItem = list.find(item => item.name === dialog.value);
@@ -93,6 +97,30 @@ const Content = ({ list, deleteList, addList, deleteTask }) => {
           .map(item => item.id);
         deleteList(findItems);
       }
+    }
+    setDialog({ open: false, value: null });
+  };
+
+  const handleAddTasks = (task, info) => {
+    if (!!task.trim() && task.length > 2) {
+      const findList = list.find(item => item.id === showTasks);
+      const tasks = findList.list;
+      let id = null;
+      if (tasks) {
+        const taskId = tasks[tasks.length - 1];
+        id = taskId.id + 1;
+      } else {
+        id = 1;
+      }
+      const taskObject = {
+        id,
+        task,
+        info
+      };
+      addTask({ idList: findList.id, task: taskObject });
+    } else {
+      alert("too short task's name");
+      return;
     }
     setDialog({ open: false, value: null });
   };
@@ -135,6 +163,10 @@ const Content = ({ list, deleteList, addList, deleteTask }) => {
     setShowTasks(null);
   };
 
+  const handleAddNewTask = () => {
+    setDialog({ open: true, value: "add_task" });
+  };
+
   const getTasksList = () => {
     const currentList = list.find(item => item.id === showTasks);
 
@@ -150,8 +182,10 @@ const Content = ({ list, deleteList, addList, deleteTask }) => {
       <Grid item xs={11} md={10} lg={9} xl={7} className={classes.margin}>
         <Header
           handleSelect={handleSelect}
+          addNewTask={handleAddNewTask}
           tasks={!!showTasks}
           returnToList={handleReturn}
+          isTasks={!!showTasks}
         />
         <List
           list={!!showTasks ? getTasksList() : list}
@@ -161,12 +195,15 @@ const Content = ({ list, deleteList, addList, deleteTask }) => {
           checked={checked}
         />
       </Grid>
-      <DialogWindow
-        dialog={dialog}
-        handleCloseDialog={handleCloseDialog}
-        handleAddList={handleAddList}
-        checked={checked}
-      />
+      {dialog.open && (
+        <DialogWindow
+          dialog={dialog}
+          handleCloseDialog={handleCloseDialog}
+          handleAddList={handleAddList}
+          handleAddTasks={handleAddTasks}
+          checked={checked}
+        />
+      )}
     </Grid>
   );
 };
@@ -178,6 +215,7 @@ const mapStateToProps = ({ reducer: { list } }) => ({
 const mapDispatchToProps = {
   deleteList,
   addList,
+  addTask,
   deleteTask
 };
 

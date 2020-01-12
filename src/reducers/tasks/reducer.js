@@ -41,19 +41,23 @@ export const reducer = (state = initialState, action) => {
     case ADD_TASK:
       return {
         ...state,
-        list: state.list.list.concat(action.payload)
+        list: state.list.map(item =>
+          item.id === action.payload.idList
+            ? {
+                ...item,
+                list: item.list.concat(action.payload.task)
+              }
+            : item
+        )
       };
     case DELETE_TASK:
-      // console.log(action.payload);
       return {
         ...state,
         list: state.list.map(item =>
           item.id === action.payload.listId
             ? {
-                id: item.id,
-                name: item.name,
-                list: action.payload.tasks,
-                date: item.date
+                ...item,
+                list: action.payload.tasks
               }
             : { ...item }
         )

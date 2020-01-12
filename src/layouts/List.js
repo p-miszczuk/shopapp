@@ -19,16 +19,17 @@ const ListItems = ({
   checked
 }) => {
   const classes = useStyles();
-  // console.log("lista", list);
+
   return (
     <List>
       {list.map(item => (
         <ListItem key={item.name || item.id}>
+          {/* {console.log(checked, item.id, checked.indexOf(item.name || item.id))} */}
           <Checkbox
             edge="start"
-            value={item.name || item.task}
+            value={item.name || item.id}
             onClick={handleChecked}
-            checked={checked.indexOf(item.name || item.id) !== -1}
+            checked={checked.indexOf(item.name || item.id.toString()) !== -1}
           />
           <ListItemText
             value={item.name || item.task}

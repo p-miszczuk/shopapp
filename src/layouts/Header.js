@@ -3,6 +3,7 @@ import { IconButton, Menu, MenuItem, Fab } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import AddIcon from "@material-ui/icons/Add";
 
 const options = [
   { name: "New list", key: "newList" },
@@ -26,9 +27,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Header = ({ handleSelect, tasks, returnToList }) => {
+const Header = ({ isTasks, handleSelect, addNewTask, tasks, returnToList }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
+
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -42,12 +44,20 @@ const Header = ({ handleSelect, tasks, returnToList }) => {
     <div className={classes.headerMenu}>
       {tasks && (
         <div>
-          <Fab size={"small"} color={"primary"} onClick={returnToList}>
+          <Fab
+            size={"small"}
+            color={"primary"}
+            onClick={returnToList}
+            style={{ marginRight: "15px" }}
+          >
             <ArrowBackIcon />
+          </Fab>
+          <Fab size={"small"} color={"secondary"} onClick={addNewTask}>
+            <AddIcon />
           </Fab>
         </div>
       )}
-      <div className={classes.title}>Shopping</div>
+      <div className={classes.title}>{isTasks ? "Tasks" : "Shopping"}</div>
       <div>
         <IconButton onClick={handleClick}>
           <MoreVertIcon />
@@ -58,11 +68,17 @@ const Header = ({ handleSelect, tasks, returnToList }) => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          {options.map(option => (
-            <MenuItem key={option.key} onClick={() => handleClose(option.key)}>
-              {option.name}
-            </MenuItem>
-          ))}
+          {options.map(option => {
+            if (option.key === "newList" && isTasks) return null;
+            return (
+              <MenuItem
+                key={option.key}
+                onClick={() => handleClose(option.key)}
+              >
+                {option.name}
+              </MenuItem>
+            );
+          })}
         </Menu>
       </div>
     </div>
