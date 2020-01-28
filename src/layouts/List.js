@@ -15,6 +15,7 @@ const ListItems = ({
   list,
   handleChecked,
   handleEdit,
+  handleShowInfo,
   handleDeleteList,
   checked
 }) => {
@@ -24,7 +25,6 @@ const ListItems = ({
     <List>
       {list.map(item => (
         <ListItem key={item.name || item.id}>
-          {/* {console.log(checked, item.id, checked.indexOf(item.name || item.id))} */}
           <Checkbox
             edge="start"
             value={item.name || item.id}
@@ -39,13 +39,13 @@ const ListItems = ({
             className={classes.textEdit}
             onClick={handleEdit}
           />
-          {!!item.task && (
+          {!!item.task && item.info && (
             <Fab
               style={{ marginRight: "10px" }}
               size={"small"}
               color={"secondary"}
               value={item.id}
-              // onClick={handleEditList}
+              onClick={handleShowInfo}
             >
               <InfoIcon />
             </Fab>

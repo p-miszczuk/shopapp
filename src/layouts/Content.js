@@ -86,7 +86,9 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
           tasks = currentList.list.filter(
             item => !dialog.value.includes(item.id.toString())
           );
+          setChecked([]);
         }
+
         deleteTask({ tasks, listId: showTasks });
       } else if (typeof dialog.value === "string") {
         const findItem = list.find(item => item.name === dialog.value);
@@ -106,7 +108,7 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
       const findList = list.find(item => item.id === showTasks);
       const tasks = findList.list;
       let id = null;
-      if (tasks) {
+      if (tasks.length > 0) {
         const taskId = tasks[tasks.length - 1];
         id = taskId.id + 1;
       } else {
@@ -167,6 +169,17 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
     setDialog({ open: true, value: "add_task" });
   };
 
+  const handleShowInfo = e => {
+    const taskInfo = getTasksList().find(
+      task => task.id === Number(e.currentTarget.value)
+    );
+
+    setDialog({
+      open: true,
+      value: { info: "show_info", task: taskInfo.info }
+    });
+  };
+
   const getTasksList = () => {
     const currentList = list.find(item => item.id === showTasks);
 
@@ -190,6 +203,7 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
         <List
           list={!!showTasks ? getTasksList() : list}
           handleEdit={handleEdit}
+          handleShowInfo={handleShowInfo}
           handleChecked={handleChecked}
           handleDeleteList={handleDeleteList}
           checked={checked}

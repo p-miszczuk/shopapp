@@ -30,12 +30,15 @@ const DialogWindow = ({
 
   const classes = useStyles();
   const addTask = dialog.value === "add_task" ? true : false;
+  const showInfo = dialog.value.info === "show_info" ? true : false;
 
   return (
     <Dialog open={dialog.open} onClose={handleCloseDialog}>
       <DialogTitle>
         {addTask
           ? "Add new task"
+          : showInfo
+          ? "Additional info"
           : dialog.value === "newList"
           ? "Add new list"
           : "Confirm window"}
@@ -64,7 +67,11 @@ const DialogWindow = ({
             </>
           ) : (
             <DialogContentText>
-              Do you want to delete {checked.length > 1 ? "items" : "item"}?
+              {showInfo
+                ? dialog.value.task
+                : `Do you want to delete ${
+                    checked.length > 1 ? "items" : "item"
+                  }?`}
             </DialogContentText>
           )}
         </DialogContent>
@@ -73,22 +80,24 @@ const DialogWindow = ({
             autoFocus
             onClick={handleCloseDialog}
             color={"primary"}
-            text={"Disagree"}
+            text={showInfo ? "Close" : "Disagree"}
             value={"disagree"}
           />
-          <MainButton
-            autoFocus
-            onClick={e =>
-              addTask
-                ? handleAddTasks(input, info)
-                : dialog.value === "newList"
-                ? handleAddList(input)
-                : handleCloseDialog(e)
-            }
-            color={"primary"}
-            text={addTask ? "Add" : "Agree"}
-            value={"agree"}
-          />
+          {!showInfo && (
+            <MainButton
+              autoFocus
+              onClick={e =>
+                addTask
+                  ? handleAddTasks(input, info)
+                  : dialog.value === "newList"
+                  ? handleAddList(input)
+                  : handleCloseDialog(e)
+              }
+              color={"primary"}
+              text={addTask ? "Add" : "Agree"}
+              value={"agree"}
+            />
+          )}
         </DialogActions>
       </FormControl>
     </Dialog>
