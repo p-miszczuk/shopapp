@@ -1,12 +1,11 @@
 import React, { useState } from "react";
+import { withRouter } from "react-router-dom";
 import { Grid } from "@material-ui/core";
 import MainButton from "../components/buttons/MainButton";
 import MainInput from "../components/Inputs/Input";
 
-const Login = ({ fakeAuth, useHistory }) => {
+const Login = ({ fakeAuth, history }) => {
   const [name, setName] = useState("");
-
-  let history = useHistory();
 
   let login = () => {
     fakeAuth.in(() => {
@@ -33,7 +32,7 @@ const Login = ({ fakeAuth, useHistory }) => {
       style={{ minHeight: "100vh" }}
     >
       <Grid item xs={10} sm={9} lg={7}>
-        <form onSubmit={handleSubmit}>
+        <form data-test="login-form" onSubmit={handleSubmit}>
           <MainInput
             id={"name"}
             label={"Name"}
@@ -54,4 +53,4 @@ const Login = ({ fakeAuth, useHistory }) => {
   );
 };
 
-export default Login;
+export default withRouter(Login);

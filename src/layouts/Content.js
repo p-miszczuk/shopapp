@@ -61,10 +61,16 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
   const handleEdit = event => {
     const name = event.currentTarget.attributes.value.value;
     const findTasksList = list.find(item => item.name === name);
+
     if (!!findTasksList) {
       setChecked([]);
       setShowTasks(findTasksList.id);
     }
+  };
+
+  const handeEditTask = e => {
+    const id = e.currentTarget.id;
+    setDialog({ open: true, value: "edit_task" });
   };
 
   const handleDeleteList = event => {
@@ -86,9 +92,8 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
           tasks = currentList.list.filter(
             item => !dialog.value.includes(item.id.toString())
           );
-          setChecked([]);
         }
-
+        setChecked([]);
         deleteTask({ tasks, listId: showTasks });
       } else if (typeof dialog.value === "string") {
         const findItem = list.find(item => item.name === dialog.value);
@@ -129,11 +134,11 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
 
   //add new list
   const handleAddList = value => {
-    if (typeof value === "string" && !!value) {
-      const lastIndex = list[list.length - 1];
+    if (value.trim()) {
+      const id = list.length ? Number(list[list.length - 1].id) + 1 : 1;
 
       const newListObject = {
-        id: Number(lastIndex.id) + 1,
+        id,
         name: value,
         list: [],
         date: setDate()
@@ -202,7 +207,7 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
         />
         <List
           list={!!showTasks ? getTasksList() : list}
-          handleEdit={handleEdit}
+          handleEdit={!!showTasks ? handeEditTask : handleEdit}
           handleShowInfo={handleShowInfo}
           handleChecked={handleChecked}
           handleDeleteList={handleDeleteList}

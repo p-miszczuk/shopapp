@@ -23,8 +23,8 @@ const ListItems = ({
 
   return (
     <List>
-      {list.map(item => (
-        <ListItem key={item.name || item.id}>
+      {list.map((item, index) => (
+        <ListItem key={index}>
           <Checkbox
             edge="start"
             value={item.name || item.id}
