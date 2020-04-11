@@ -3,6 +3,7 @@ export const DELETE_LIST = "DELETE_LIST";
 export const ADD_TASK = "ADD_TASK";
 export const DELETE_TASK = "DELETE_TASK";
 export const UPDATE_TASK = "UPDATE_TASK";
+export const EDIT_TASK = "EDIT_TASK";
 
 export const addList = payload => ({
   type: ADD_LIST,

@@ -5,9 +5,10 @@ import List from "./List";
 import DialogWindow from "./Dialog";
 import {
   addList,
-  deleteList,
   addTask,
-  deleteTask
+  deleteList,
+  deleteTask,
+  updateTask
 } from "../reducers/tasks/actions";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
@@ -19,10 +20,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
+const Content = ({
+  addList,
+  addTask,
+  deleteList,
+  deleteTask,
+  list,
+  updateTask
+}) => {
+  console.log(list);
   const [checked, setChecked] = useState([]);
-  const [dialog, setDialog] = useState({ open: false, value: null });
+  const [dialog, setDialog] = useState({
+    open: false,
+    value: null
+  });
   const [showTasks, setShowTasks] = useState(null);
+  const [item, setItem] = useState(null);
   const classes = useStyles();
 
   const handleChecked = event => {
@@ -70,6 +83,9 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
 
   const handeEditTask = e => {
     const id = e.currentTarget.id;
+    const getTask = getTasksList().find(task => task.id === Number(id));
+
+    setItem(getTask);
     setDialog({ open: true, value: "edit_task" });
   };
 
@@ -195,6 +211,11 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
     return [];
   };
 
+  const handleEditItem = (input, info, id) => {
+    updateTask({ input, info, id, listId: showTasks });
+    setDialog({ open: false, value: null });
+  };
+
   return (
     <Grid container spacing={0} justify={"center"} alignItems={"center"}>
       <Grid item xs={11} md={10} lg={9} xl={7} className={classes.margin}>
@@ -220,7 +241,9 @@ const Content = ({ list, deleteList, addList, addTask, deleteTask }) => {
           handleCloseDialog={handleCloseDialog}
           handleAddList={handleAddList}
           handleAddTasks={handleAddTasks}
+          handleEditItem={handleEditItem}
           checked={checked}
+          item={item}
         />
       )}
     </Grid>
@@ -232,10 +255,11 @@ const mapStateToProps = ({ reducer: { list } }) => ({
 });
 
 const mapDispatchToProps = {
-  deleteList,
   addList,
   addTask,
-  deleteTask
+  deleteList,
+  deleteTask,
+  updateTask
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Content);

@@ -26,6 +26,19 @@ const initialState = {
   ]
 };
 
+const updateList = ({ id, listId, info, task, stateList }) => {
+  return stateList.map(list =>
+    list.id === listId
+      ? {
+          ...list,
+          list: list.list.map(item =>
+            item.id === id ? { id, info, task } : { ...item }
+          )
+        }
+      : { ...list }
+  );
+};
+
 export const reducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_LIST:
@@ -63,9 +76,16 @@ export const reducer = (state = initialState, action) => {
         )
       };
     case UPDATE_TASK:
+      const { id, listId, info, input } = action.payload;
       return {
         ...state,
-        list: state.list.list.slice(action.payload)
+        list: updateList({
+          id,
+          listId,
+          info,
+          task: input,
+          stateList: state.list
+        })
       };
     default:
       return state;
