@@ -4,6 +4,7 @@ import { Button } from "@material-ui/core";
 const MainButton = ({
   variant,
   color,
+  disabled,
   onClick,
   fullWidth,
   text,
@@ -13,6 +14,7 @@ const MainButton = ({
   <Button
     variant={variant}
     color={color}
+    disabled={disabled}
     onClick={onClick}
     fullWidth={fullWidth}
     type={type}

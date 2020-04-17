@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { withRouter } from "react-router-dom";
 import { Grid } from "@material-ui/core";
 import { signInByEmail } from "../reducers/auth/actions";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import MainButton from "../components/buttons/MainButton";
 import MainInput from "../components/Inputs/Input";
 
-const Login = ({ fakeAuth, history }) => {
+const Login = ({ fakeAuth, history, loading, signInByEmail }) => {
   const [email, setEmail] = useState("shoppingapp@shop.pl");
   const [password, setPassword] = useState("shoppingapp");
-  const dispatch = useDispatch();
 
+  console.log("loading", loading);
   let login = () => {
     fakeAuth.in(() => {
       history.replace("/in");
@@ -19,8 +19,7 @@ const Login = ({ fakeAuth, history }) => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    // !!name.trim().toLowerCase().length && login();
-    dispatch(signInByEmail({ email, password }));
+    email.trim().toLowerCase().length && signInByEmail({ email, password });
   };
 
   return (
@@ -50,11 +49,12 @@ const Login = ({ fakeAuth, history }) => {
             type="password"
           />
           <MainButton
+            color={"secondary"}
+            disabled={loading}
+            fullWidth={true}
+            text={loading ? "Loading..." : "Login in"}
             type={"submit"}
             variant={"contained"}
-            color={"secondary"}
-            fullWidth={true}
-            text={"Login in"}
           />
         </form>
       </Grid>
@@ -62,4 +62,10 @@ const Login = ({ fakeAuth, history }) => {
   );
 };
 
-export default withRouter(Login);
+const mapStateToProps = ({ authReducer }) => ({ loading: authReducer.request });
+
+const mapDispatchToProps = {
+  signInByEmail
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));

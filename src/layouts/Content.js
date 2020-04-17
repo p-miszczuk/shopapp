@@ -28,7 +28,7 @@ const Content = ({
   list,
   updateTask
 }) => {
-  console.log(list);
+  
   const [checked, setChecked] = useState([]);
   const [dialog, setDialog] = useState({
     open: false,
