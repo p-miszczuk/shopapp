@@ -8,7 +8,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const MainInput = ({ id, label, value, onChange, fullWidth = false }) => {
+const MainInput = ({ id, label, value, onChange, type, fullWidth = false }) => {
   const classes = useStyles();
 
   return (
@@ -19,6 +19,7 @@ const MainInput = ({ id, label, value, onChange, fullWidth = false }) => {
       fullWidth={fullWidth}
       onChange={onChange}
       className={classes.margin}
+      type={type}
     />
   );
 };

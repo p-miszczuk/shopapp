@@ -5,14 +5,14 @@ import {
   Redirect,
   useHistory
 } from "react-router-dom";
-import { createStore } from "redux";
 import { Provider } from "react-redux";
-import rootReducer from "./reducers/store";
+import store from "./reducers/store";
 import "./App.css";
 import Login from "./layouts/Login";
 import Content from "./layouts/Content";
-
-const store = createStore(rootReducer);
+import { ReactReduxFirebaseProvider } from "react-redux-firebase";
+import { createFirestoreInstance } from "redux-firestore";
+import firebase from "./utils/fbConfig";
 
 const fakeAuth = {
   state: false,
@@ -22,17 +22,28 @@ const fakeAuth = {
   }
 };
 
+const rrfConfig = {};
+
+const rrfProps = {
+  firebase,
+  config: rrfConfig,
+  dispatch: store.dispatch,
+  createFirestoreInstance
+};
+
 function App() {
   return (
     <Provider store={store}>
-      <Router>
-        <PrivateRoute path="/in">
-          <Content />
-        </PrivateRoute>
-        <Route path="/login">
-          <Login useHistory={useHistory} fakeAuth={fakeAuth} />
-        </Route>
-      </Router>
+      <ReactReduxFirebaseProvider {...rrfProps}>
+        <Router>
+          <PrivateRoute path="/in">
+            <Content />
+          </PrivateRoute>
+          <Route path="/login">
+            <Login useHistory={useHistory} fakeAuth={fakeAuth} />
+          </Route>
+        </Router>
+      </ReactReduxFirebaseProvider>
     </Provider>
   );
 }

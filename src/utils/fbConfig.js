@@ -1,3 +1,7 @@
+import firebase from "@firebase/app";
+import "@firebase/firestore";
+import "firebase/auth";
+
 const firebaseConfig = {
   apiKey: "AIzaSyB22C9VWwn4gMh5RMjw82mv2fo4Mp7HABU",
   authDomain: "my-list-test.firebaseapp.com",
@@ -9,3 +13,5 @@ const firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
+export default firebase;
