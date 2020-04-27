@@ -10,6 +10,7 @@ import {
   deleteTask,
   updateTask
 } from "../reducers/tasks/actions";
+import { logout } from "../reducers/auth/actions";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 
@@ -26,9 +27,9 @@ const Content = ({
   deleteList,
   deleteTask,
   list,
+  logout,
   updateTask
 }) => {
-  
   const [checked, setChecked] = useState([]);
   const [dialog, setDialog] = useState({
     open: false,
@@ -68,6 +69,8 @@ const Content = ({
       setDialog({ open: true, value: checked });
     } else if (value === "newList") {
       setDialog({ open: true, value: value });
+    } else if (value === "logOut") {
+      handleLogout();
     }
   };
 
@@ -216,6 +219,10 @@ const Content = ({
     setDialog({ open: false, value: null });
   };
 
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <Grid container spacing={0} justify={"center"} alignItems={"center"}>
       <Grid item xs={11} md={10} lg={9} xl={7} className={classes.margin}>
@@ -259,6 +266,7 @@ const mapDispatchToProps = {
   addTask,
   deleteList,
   deleteTask,
+  logout,
   updateTask
 };
 

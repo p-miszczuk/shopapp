@@ -2,24 +2,18 @@ import React, { useState } from "react";
 import { Grid } from "@material-ui/core";
 import { signInByEmail } from "../reducers/auth/actions";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
 import MainButton from "../components/buttons/MainButton";
 import MainInput from "../components/Inputs/Input";
 
-const Login = ({ fakeAuth, history, loading, signInByEmail }) => {
+const Login = ({ loading, signInByEmail }) => {
   const [email, setEmail] = useState("shoppingapp@shop.pl");
   const [password, setPassword] = useState("shoppingapp");
 
-  console.log("loading", loading);
-  let login = () => {
-    fakeAuth.in(() => {
-      history.replace("/in");
-    });
-  };
-
   const handleSubmit = event => {
     event.preventDefault();
-    email.trim().toLowerCase().length && signInByEmail({ email, password });
+    email.trim().length &&
+      password.trim().length &&
+      signInByEmail({ email, password });
   };
 
   return (
@@ -68,4 +62,4 @@ const mapDispatchToProps = {
   signInByEmail
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
