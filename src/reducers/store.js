@@ -6,7 +6,7 @@ import {
   reduxFirestore,
   firestoreReducer
 } from "redux-firestore";
-import { reducer } from "./tasks/reducer";
+import { tasksReducer } from "./tasks/reducer";
 import { authReducer } from "./auth/reducer";
 import firebase from "../utils/fbConfig";
 
@@ -20,7 +20,7 @@ const rootReducer = combineReducers({
   authReducer,
   firebase: firebaseReducer,
   firestore: firestoreReducer,
-  reducer
+  tasksReducer
 });
 const store = createStore(
   rootReducer,

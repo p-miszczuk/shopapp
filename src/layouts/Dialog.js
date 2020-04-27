@@ -63,6 +63,8 @@ const DialogWindow = ({
   const addTask = dialog.value === "add_task" ? true : false;
   const editItem = dialog.value === "edit_task" ? true : false;
   const showInfo = dialog.value.info === "show_info" ? true : false;
+  const dialogValue = dialog.value;
+  const itemId = item && item.id ? item.id : null;
 
   return (
     <Dialog open={true} onClose={handleCloseDialog}>
@@ -110,7 +112,7 @@ const DialogWindow = ({
           {!showInfo && (
             <MainButton
               autoFocus
-              onClick={e => handleClick(dialog.value, item.id, e)}
+              onClick={e => handleClick(dialogValue, itemId, e)}
               color={"primary"}
               text={addTask || editItem ? "Add" : "Agree"}
               value={"agree"}

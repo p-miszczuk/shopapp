@@ -1,5 +1,7 @@
 import {
-  ADD_LIST,
+  ADD_LIST_REQUEST,
+  ADD_LIST_SUCCESS,
+  ADD_LIST_ERROR,
   DELETE_LIST,
   ADD_TASK,
   DELETE_TASK,
@@ -7,6 +9,8 @@ import {
 } from "./actions";
 
 const initialState = {
+  listRequest: false,
+  listError: "",
   list: [
     {
       id: 1,
@@ -39,12 +43,23 @@ const updateList = ({ id, listId, info, task, stateList }) => {
   );
 };
 
-export const reducer = (state = initialState, action) => {
+export const tasksReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_LIST:
+    case ADD_LIST_REQUEST:
       return {
         ...state,
-        list: state.list.concat(action.payload)
+        listRequest: true
+      };
+    case ADD_LIST_SUCCESS:
+      return {
+        ...state,
+        listRequest: false
+      };
+    case ADD_LIST_ERROR:
+      return {
+        ...state,
+        listError: action.payload,
+        listRequest: false
       };
     case DELETE_LIST:
       return {

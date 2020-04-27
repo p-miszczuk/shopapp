@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Route, Switch, Redirect, useHistory } from "react-router-dom";
-import Login from "./layouts/Login";
+import { Redirect, Route, Switch, useHistory } from "react-router-dom";
 import Content from "./layouts/Content";
 import firebase from "./utils/fbConfig";
+import Login from "./layouts/Login";
+import Spinner from "./components/Spinner";
 
 const PrivateRoute = ({ isAuth, component: Component, ...rest }) => {
   return (
@@ -25,9 +26,9 @@ const PrivateRoute = ({ isAuth, component: Component, ...rest }) => {
   );
 };
 
-const Routes = ({ isAuth, isLoaded }) => {
+const Routes = ({ auth, loginLoaded }) => {
   const history = useHistory();
-  console.log(isLoaded);
+
   useEffect(() => {
     checkAuthStatus();
     return () => {
@@ -38,23 +39,26 @@ const Routes = ({ isAuth, isLoaded }) => {
 
   const checkAuthStatus = () => {
     firebase.auth().onAuthStateChanged(user => {
-      if (user) {
+      if (user && history.location.pathname !== "/") {
         history.push("/");
       }
     });
   };
 
+  if (!auth.isLoaded) {
+    return <Spinner />;
+  }
+
   return (
     <Switch>
-      <PrivateRoute exact path="/" isAuth={isAuth} component={Content} />
+      <PrivateRoute exact path="/" isAuth={auth.uid} component={Content} />
       <Route exact path="/login" component={Login} />
     </Switch>
   );
 };
 
 const mapStateToProps = ({ firebase }) => ({
-  isAuth: firebase.auth.uid,
-  isLoaded: firebase.auth
+  auth: firebase.auth
 });
 
 export default connect(mapStateToProps)(Routes);

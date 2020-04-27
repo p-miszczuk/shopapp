@@ -46,7 +46,7 @@ const Login = ({ loading, signInByEmail }) => {
             color={"secondary"}
             disabled={loading}
             fullWidth={true}
-            text={loading ? "Loading..." : "Login in"}
+            text={loading ? "Loading..." : "Sign in"}
             type={"submit"}
             variant={"contained"}
           />

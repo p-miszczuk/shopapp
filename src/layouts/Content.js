@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import Header from "./Header";
 import List from "./List";
 import DialogWindow from "./Dialog";
+import Spinner from "../components/Spinner";
 import {
   addList,
   addTask,
@@ -27,6 +28,7 @@ const Content = ({
   deleteList,
   deleteTask,
   list,
+  listRequest,
   logout,
   updateTask
 }) => {
@@ -154,34 +156,10 @@ const Content = ({
   //add new list
   const handleAddList = value => {
     if (value.trim()) {
-      const id = list.length ? Number(list[list.length - 1].id) + 1 : 1;
-
-      const newListObject = {
-        id,
-        name: value,
-        list: [],
-        date: setDate()
-      };
-
-      addList(newListObject);
+      addList(value);
     }
 
     setDialog({ open: false, value: null });
-  };
-
-  const setDate = () => {
-    const date = new Date();
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-
-    const fullDate =
-      (day < 9 ? "0" + day : day) +
-      "/" +
-      (month < 9 ? "0" + month : month) +
-      "/" +
-      year;
-    return fullDate;
   };
 
   const handleReturn = () => {
@@ -253,12 +231,14 @@ const Content = ({
           item={item}
         />
       )}
+      {listRequest && <Spinner />}
     </Grid>
   );
 };
 
-const mapStateToProps = ({ reducer: { list } }) => ({
-  list
+const mapStateToProps = ({ tasksReducer: { list, listRequest } }) => ({
+  list,
+  listRequest
 });
 
 const mapDispatchToProps = {
