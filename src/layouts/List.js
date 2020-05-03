@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ListItems = ({
-  list,
+  list = [],
   handleChecked,
   handleEdit,
   handleShowInfo,
@@ -20,6 +20,17 @@ const ListItems = ({
   checked
 }) => {
   const classes = useStyles();
+
+  const getDate = values => {
+    if (values && !values.seconds) {
+      return "";
+    }
+    const date = new Date(values.seconds * 1000);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${day} / ${month} / ${year}`;
+  };
 
   return (
     <List>
@@ -35,7 +46,7 @@ const ListItems = ({
             value={item.name || item.task}
             id={item.name || item.id}
             primary={`${item.name || item.task}`}
-            secondary={`${item.date || ""}`}
+            secondary={getDate(item.date)}
             className={classes.textEdit}
             onClick={handleEdit}
           />

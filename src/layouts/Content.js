@@ -14,6 +14,8 @@ import {
 import { logout } from "../reducers/auth/actions";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
+import { firestoreConnect } from "react-redux-firebase";
+import { compose } from "redux";
 
 const useStyles = makeStyles(theme => ({
   margin: {
@@ -27,7 +29,7 @@ const Content = ({
   addTask,
   deleteList,
   deleteTask,
-  list,
+  list = [],
   listRequest,
   logout,
   updateTask
@@ -183,9 +185,9 @@ const Content = ({
   };
 
   const getTasksList = () => {
-    const currentList = list.find(item => item.id === showTasks);
+    const currentList = list.filter(item => item.id === showTasks);
 
-    if (currentList.list.length > 0) {
+    if (currentList.length > 0) {
       return currentList.list;
     }
 
@@ -197,9 +199,7 @@ const Content = ({
     setDialog({ open: false, value: null });
   };
 
-  const handleLogout = () => {
-    logout();
-  };
+  const handleLogout = () => logout();
 
   return (
     <Grid container spacing={0} justify={"center"} alignItems={"center"}>
@@ -236,10 +236,15 @@ const Content = ({
   );
 };
 
-const mapStateToProps = ({ tasksReducer: { list, listRequest } }) => ({
-  list,
-  listRequest
-});
+const mapStateToProps = ({
+  tasksReducer: { listRequest },
+  firestore: { ordered }
+}) => {
+  return {
+    list: ordered.list,
+    listRequest
+  };
+};
 
 const mapDispatchToProps = {
   addList,
@@ -250,4 +255,18 @@ const mapDispatchToProps = {
   updateTask
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Content);
+export default compose(
+  firestoreConnect((props, state) => {
+    const id = state.firebase.auth().currentUser.uid;
+
+    return [
+      {
+        collection: "tasks",
+        doc: id,
+        subcollections: [{ collection: "list" }],
+        storeAs: "list"
+      }
+    ];
+  }),
+  connect(mapStateToProps, mapDispatchToProps)
+)(Content);

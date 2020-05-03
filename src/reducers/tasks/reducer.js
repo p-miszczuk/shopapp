@@ -2,7 +2,9 @@ import {
   ADD_LIST_REQUEST,
   ADD_LIST_SUCCESS,
   ADD_LIST_ERROR,
-  DELETE_LIST,
+  DELETE_LIST_REQUEST,
+  DELETE_LIST_SUCCES,
+  DELETE_LIST_ERROR,
   ADD_TASK,
   DELETE_TASK,
   UPDATE_TASK
@@ -61,10 +63,23 @@ export const tasksReducer = (state = initialState, action) => {
         listError: action.payload,
         listRequest: false
       };
-    case DELETE_LIST:
+    case DELETE_LIST_REQUEST:
       return {
         ...state,
-        list: state.list.filter(item => !action.payload.includes(item.id))
+        listError: "",
+        listRequest: true
+      };
+    case DELETE_LIST_SUCCES:
+      return {
+        ...state,
+        listError: "",
+        listRequest: false
+      };
+    case DELETE_LIST_ERROR:
+      return {
+        ...state,
+        listEror: action.payload,
+        listRequest: false
       };
     case ADD_TASK:
       return {
