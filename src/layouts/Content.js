@@ -168,13 +168,13 @@ const Content = ({
   };
 
   const handleShowInfo = e => {
-    // const taskInfo = getTasksList().find(
-    //   task => task.id === Number(e.currentTarget.value)
-    // );
-    // setDialog({
-    //   open: true,
-    //   value: { info: "show_info", task: taskInfo.info }
-    // });
+    const taskInfo = list.find(task => task.id === e.currentTarget.value);
+
+    taskInfo &&
+      setDialog({
+        open: true,
+        value: { info: "show_info", task: taskInfo.info }
+      });
   };
 
   const handleEditItem = (input, info, id) => {
