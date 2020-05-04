@@ -93,6 +93,18 @@ export const tasksReducer = (state = initialState, action) => {
         ...state,
         tasksRequest: true
       };
+    case DELETE_TASK_SUCCESS:
+      return {
+        ...state,
+        tasksError: "",
+        tasksRequest: false
+      };
+    case DELETE_TASK_ERROR:
+      return {
+        ...state,
+        tasksError: action.payload,
+        tasksRequest: false
+      };
     case UPDATE_TASK:
       const { id, listId, info, input } = action.payload;
       return {
