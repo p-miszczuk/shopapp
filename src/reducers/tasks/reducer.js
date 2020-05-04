@@ -11,7 +11,9 @@ import {
   DELETE_TASK_REQUEST,
   DELETE_TASK_SUCCESS,
   DELETE_TASK_ERROR,
-  UPDATE_TASK
+  UPDATE_TASK_REQUEST,
+  UPDATE_TASK_SUCCESS,
+  UPDATE_TASK_ERROR
 } from "./actions";
 
 const initialState = {
@@ -105,17 +107,22 @@ export const tasksReducer = (state = initialState, action) => {
         tasksError: action.payload,
         tasksRequest: false
       };
-    case UPDATE_TASK:
-      const { id, listId, info, input } = action.payload;
+    case UPDATE_TASK_REQUEST:
       return {
         ...state,
-        list: updateList({
-          id,
-          listId,
-          info,
-          task: input,
-          stateList: state.list
-        })
+        tasksRequest: true
+      };
+    case UPDATE_TASK_SUCCESS:
+      return {
+        ...state,
+        tasksError: "",
+        tasksRequest: false
+      };
+    case UPDATE_TASK_ERROR:
+      return {
+        ...state,
+        tasksError: action.payload,
+        tasksRequest: false
       };
     default:
       return state;

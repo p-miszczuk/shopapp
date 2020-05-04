@@ -29,7 +29,7 @@ const Content = ({
   deleteList,
   deleteTask,
   list = [],
-  listRequest,
+  request,
   logout,
   updateTask,
   userId = 0
@@ -106,10 +106,10 @@ const Content = ({
   };
 
   const handeEditTask = e => {
-    // const id = e.currentTarget.id;
-    // const getTask = getTasksList().find(task => task.id === Number(id));
-    // setItem(getTask);
-    // setDialog({ open: true, value: "edit_task" });
+    const id = e.currentTarget.id;
+    const getTask = list.find(task => task.id === id);
+    setItem(getTask);
+    setDialog({ open: true, value: "edit_task" });
   };
 
   const handleDeleteList = event => {
@@ -178,7 +178,7 @@ const Content = ({
   };
 
   const handleEditItem = (input, info, id) => {
-    updateTask({ input, info, id, listId: showTasks });
+    updateTask({ input, info, id });
     setDialog({ open: false, value: null });
   };
 
@@ -214,19 +214,19 @@ const Content = ({
           item={item}
         />
       )}
-      {listRequest && <Spinner />}
+      {request && <Spinner />}
     </Grid>
   );
 };
 
 const mapStateToProps = ({
-  tasksReducer: { listRequest },
+  tasksReducer: { listRequest, tasksRequest },
   firestore: { ordered },
   firebase: { auth }
 }) => {
   return {
     list: ordered.list,
-    listRequest,
+    request: listRequest || tasksRequest,
     userId: auth.uid
   };
 };
