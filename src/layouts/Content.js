@@ -14,8 +14,7 @@ import {
 import { logout } from "../reducers/auth/actions";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
-import { firestoreConnect } from "react-redux-firebase";
-import { compose } from "redux";
+import { useFirestoreConnect } from "react-redux-firebase";
 
 const useStyles = makeStyles(theme => ({
   margin: {
@@ -30,9 +29,10 @@ const Content = ({
   deleteList,
   deleteTask,
   list = [],
-  listRequest,
+  request,
   logout,
-  updateTask
+  updateTask,
+  userId = 0
 }) => {
   const [checked, setChecked] = useState([]);
   const [dialog, setDialog] = useState({
@@ -42,6 +42,33 @@ const Content = ({
   const [showTasks, setShowTasks] = useState(null);
   const [item, setItem] = useState(null);
   const classes = useStyles();
+
+  useFirestoreConnect(() =>
+    showTasks
+      ? [
+          {
+            collection: "tasks",
+            doc: userId,
+            subcollections: [
+              {
+                collection: "tasks",
+                where: [["listId", "==", showTasks]],
+                orderBy: ["date", "desc"]
+              }
+            ],
+            storeAs: "list"
+          }
+        ]
+      : [
+          {
+            collection: "tasks",
+            doc: userId,
+            subcollections: [{ collection: "list" }],
+            orderBy: ["date", "desc"],
+            storeAs: "list"
+          }
+        ]
+  );
 
   const handleChecked = event => {
     const findIndex = checked.indexOf(event.target.value);
@@ -55,17 +82,7 @@ const Content = ({
 
   const handleSelect = value => {
     if (value === "selectAll") {
-      let newChecked = [];
-      if (!!showTasks) {
-        list.map(item => {
-          if (item.id === showTasks) {
-            item.list.forEach(elem => newChecked.push(elem.id.toString()));
-          }
-          return item;
-        });
-      } else {
-        list.forEach(item => newChecked.push(item.name));
-      }
+      const newChecked = list.map(item => item.id);
       setChecked(newChecked);
     } else if (value === "deselectAll") {
       setChecked([]);
@@ -90,8 +107,7 @@ const Content = ({
 
   const handeEditTask = e => {
     const id = e.currentTarget.id;
-    const getTask = getTasksList().find(task => task.id === Number(id));
-
+    const getTask = list.find(task => task.id === id);
     setItem(getTask);
     setDialog({ open: true, value: "edit_task" });
   };
@@ -104,50 +120,28 @@ const Content = ({
   const handleCloseDialog = event => {
     const target = event.currentTarget.value;
     if (target === "agree") {
-      if (!!showTasks) {
-        const currentList = list.find(item => item.id === showTasks);
-        let tasks = null;
-        if (typeof dialog.value === "string") {
-          tasks = currentList.list.filter(
-            item => item.id !== Number(dialog.value)
-          );
-        } else {
-          tasks = currentList.list.filter(
-            item => !dialog.value.includes(item.id.toString())
-          );
-        }
-        setChecked([]);
-        deleteTask({ tasks, listId: showTasks });
+      if (showTasks) {
+        const value =
+          typeof dialog.value === "string" ? [dialog.value] : dialog.value;
+        deleteTask(value);
       } else if (typeof dialog.value === "string") {
-        const findItem = list.find(item => item.name === dialog.value);
-        deleteList([findItem.id]);
+        deleteList([dialog.value]);
       } else {
-        const findItems = list
-          .filter(item => dialog.value.includes(item.name))
-          .map(item => item.id);
-        deleteList(findItems);
+        deleteList(dialog.value);
       }
     }
+    setChecked([]);
     setDialog({ open: false, value: null });
   };
 
   const handleAddTasks = (task, info) => {
     if (!!task.trim() && task.length > 2) {
-      const findList = list.find(item => item.id === showTasks);
-      const tasks = findList.list;
-      let id = null;
-      if (tasks.length > 0) {
-        const taskId = tasks[tasks.length - 1];
-        id = taskId.id + 1;
-      } else {
-        id = 1;
-      }
       const taskObject = {
-        id,
+        listId: showTasks,
         task,
         info
       };
-      addTask({ idList: findList.id, task: taskObject });
+      addTask(taskObject);
     } else {
       alert("too short task's name");
       return;
@@ -174,28 +168,17 @@ const Content = ({
   };
 
   const handleShowInfo = e => {
-    const taskInfo = getTasksList().find(
-      task => task.id === Number(e.currentTarget.value)
-    );
+    const taskInfo = list.find(task => task.id === e.currentTarget.value);
 
-    setDialog({
-      open: true,
-      value: { info: "show_info", task: taskInfo.info }
-    });
-  };
-
-  const getTasksList = () => {
-    const currentList = list.filter(item => item.id === showTasks);
-
-    if (currentList.length > 0) {
-      return currentList.list;
-    }
-
-    return [];
+    taskInfo &&
+      setDialog({
+        open: true,
+        value: { info: "show_info", task: taskInfo.info }
+      });
   };
 
   const handleEditItem = (input, info, id) => {
-    updateTask({ input, info, id, listId: showTasks });
+    updateTask({ input, info, id });
     setDialog({ open: false, value: null });
   };
 
@@ -207,13 +190,13 @@ const Content = ({
         <Header
           handleSelect={handleSelect}
           addNewTask={handleAddNewTask}
-          tasks={!!showTasks}
+          tasks={showTasks}
           returnToList={handleReturn}
-          isTasks={!!showTasks}
+          isTasks={showTasks}
         />
         <List
-          list={!!showTasks ? getTasksList() : list}
-          handleEdit={!!showTasks ? handeEditTask : handleEdit}
+          list={list}
+          handleEdit={showTasks ? handeEditTask : handleEdit}
           handleShowInfo={handleShowInfo}
           handleChecked={handleChecked}
           handleDeleteList={handleDeleteList}
@@ -231,18 +214,20 @@ const Content = ({
           item={item}
         />
       )}
-      {listRequest && <Spinner />}
+      {request && <Spinner />}
     </Grid>
   );
 };
 
 const mapStateToProps = ({
-  tasksReducer: { listRequest },
-  firestore: { ordered }
+  tasksReducer: { listRequest, tasksRequest },
+  firestore: { ordered },
+  firebase: { auth }
 }) => {
   return {
     list: ordered.list,
-    listRequest
+    request: listRequest || tasksRequest,
+    userId: auth.uid
   };
 };
 
@@ -255,18 +240,4 @@ const mapDispatchToProps = {
   updateTask
 };
 
-export default compose(
-  firestoreConnect((props, state) => {
-    const id = state.firebase.auth().currentUser.uid;
-
-    return [
-      {
-        collection: "tasks",
-        doc: id,
-        subcollections: [{ collection: "list" }],
-        storeAs: "list"
-      }
-    ];
-  }),
-  connect(mapStateToProps, mapDispatchToProps)
-)(Content);
+export default connect(mapStateToProps, mapDispatchToProps)(Content);

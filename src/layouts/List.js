@@ -34,43 +34,45 @@ const ListItems = ({
 
   return (
     <List>
-      {list.map((item, index) => (
-        <ListItem key={index}>
-          <Checkbox
-            edge="start"
-            value={item.name || item.id}
-            onClick={handleChecked}
-            checked={checked.indexOf(item.name || item.id.toString()) !== -1}
-          />
-          <ListItemText
-            value={item.name || item.task}
-            id={item.name || item.id}
-            primary={`${item.name || item.task}`}
-            secondary={getDate(item.date)}
-            className={classes.textEdit}
-            onClick={handleEdit}
-          />
-          {!!item.task && item.info && (
+      {list.map((item, index) => {
+        return (
+          <ListItem key={index}>
+            <Checkbox
+              edge="start"
+              value={item.id}
+              onClick={handleChecked}
+              checked={checked.indexOf(item.id.toString()) !== -1}
+            />
+            <ListItemText
+              value={item.name || item.task}
+              id={item.name || item.id}
+              primary={`${item.name || item.task}`}
+              secondary={getDate(item.date)}
+              className={classes.textEdit}
+              onClick={handleEdit}
+            />
+            {!!item.task && item.info && (
+              <Fab
+                style={{ marginRight: "10px" }}
+                size={"small"}
+                color={"secondary"}
+                value={item.id}
+                onClick={handleShowInfo}
+              >
+                <InfoIcon />
+              </Fab>
+            )}
             <Fab
-              style={{ marginRight: "10px" }}
               size={"small"}
               color={"secondary"}
               value={item.id}
-              onClick={handleShowInfo}
+              onClick={handleDeleteList}
             >
-              <InfoIcon />
+              <DeleteIcon />
             </Fab>
-          )}
-          <Fab
-            size={"small"}
-            color={"secondary"}
-            value={item.name || item.id}
-            onClick={handleDeleteList}
-          >
-            <DeleteIcon />
-          </Fab>
-        </ListItem>
-      ))}
+          </ListItem>
+        );
+      })}
     </List>
   );
 };

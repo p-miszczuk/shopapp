@@ -5,31 +5,22 @@ import {
   DELETE_LIST_REQUEST,
   DELETE_LIST_SUCCES,
   DELETE_LIST_ERROR,
-  ADD_TASK,
-  DELETE_TASK,
-  UPDATE_TASK
+  ADD_TASK_REQUEST,
+  ADD_TASK_SUCCESS,
+  ADD_TASK_ERROR,
+  DELETE_TASK_REQUEST,
+  DELETE_TASK_SUCCESS,
+  DELETE_TASK_ERROR,
+  UPDATE_TASK_REQUEST,
+  UPDATE_TASK_SUCCESS,
+  UPDATE_TASK_ERROR
 } from "./actions";
 
 const initialState = {
   listRequest: false,
+  tasksRequest: false,
   listError: "",
-  list: [
-    {
-      id: 1,
-      name: "Lista 1",
-      list: [{ id: 1, task: "Task 1", info: "Info 1" }],
-      date: "22/12/2019"
-    },
-    {
-      id: 2,
-      name: "Lista 2",
-      list: [
-        { id: 1, task: "Task 1", info: "Info 1" },
-        { id: 2, task: "Task 2", info: "Info 2" }
-      ],
-      date: "24/12/2019"
-    }
-  ]
+  tasksError: ""
 };
 
 const updateList = ({ id, listId, info, task, stateList }) => {
@@ -81,41 +72,57 @@ export const tasksReducer = (state = initialState, action) => {
         listEror: action.payload,
         listRequest: false
       };
-    case ADD_TASK:
+    case ADD_TASK_REQUEST:
       return {
         ...state,
-        list: state.list.map(item =>
-          item.id === action.payload.idList
-            ? {
-                ...item,
-                list: item.list.concat(action.payload.task)
-              }
-            : item
-        )
+        tasksError: "",
+        tasksRequest: true
       };
-    case DELETE_TASK:
+    case ADD_TASK_SUCCESS:
       return {
         ...state,
-        list: state.list.map(item =>
-          item.id === action.payload.listId
-            ? {
-                ...item,
-                list: action.payload.tasks
-              }
-            : { ...item }
-        )
+        tasksError: "",
+        tasksRequest: false
       };
-    case UPDATE_TASK:
-      const { id, listId, info, input } = action.payload;
+    case ADD_TASK_ERROR:
       return {
         ...state,
-        list: updateList({
-          id,
-          listId,
-          info,
-          task: input,
-          stateList: state.list
-        })
+        tasksError: action.payload,
+        tasksRequest: false
+      };
+    case DELETE_TASK_REQUEST:
+      return {
+        ...state,
+        tasksRequest: true
+      };
+    case DELETE_TASK_SUCCESS:
+      return {
+        ...state,
+        tasksError: "",
+        tasksRequest: false
+      };
+    case DELETE_TASK_ERROR:
+      return {
+        ...state,
+        tasksError: action.payload,
+        tasksRequest: false
+      };
+    case UPDATE_TASK_REQUEST:
+      return {
+        ...state,
+        tasksRequest: true
+      };
+    case UPDATE_TASK_SUCCESS:
+      return {
+        ...state,
+        tasksError: "",
+        tasksRequest: false
+      };
+    case UPDATE_TASK_ERROR:
+      return {
+        ...state,
+        tasksError: action.payload,
+        tasksRequest: false
       };
     default:
       return state;
