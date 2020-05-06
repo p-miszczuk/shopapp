@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Header = ({ isTasks, handleSelect, addNewTask, tasks, returnToList }) => {
+const Header = ({ isTasks, handleSelect, addNewTask, returnToList, valuesLength }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -40,9 +40,18 @@ const Header = ({ isTasks, handleSelect, addNewTask, tasks, returnToList }) => {
     typeof value === "string" && handleSelect(value);
   };
 
+  const setDisabled = option => {
+    if ((option === options[1].key || option === options[3].key) && valuesLength[0] === 0) {
+      return true;
+    } else if (option === options[2].key && valuesLength[0] === valuesLength[1]) {
+      return true;
+    }
+    return;
+  }
+
   return (
     <div className={classes.headerMenu}>
-      {tasks && (
+      {isTasks && (
         <div>
           <Fab
             size={"small"}
@@ -74,6 +83,7 @@ const Header = ({ isTasks, handleSelect, addNewTask, tasks, returnToList }) => {
               <MenuItem
                 key={option.key}
                 onClick={() => handleClose(option.key)}
+                disabled={setDisabled(option.key)}
               >
                 {option.name}
               </MenuItem>

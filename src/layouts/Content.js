@@ -190,9 +190,9 @@ const Content = ({
         <Header
           handleSelect={handleSelect}
           addNewTask={handleAddNewTask}
-          tasks={showTasks}
           returnToList={handleReturn}
           isTasks={showTasks}
+          valuesLength={[checked.length, list.length]}
         />
         <List
           list={list}
