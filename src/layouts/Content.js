@@ -13,7 +13,7 @@ import {
 } from "../reducers/tasks/actions";
 import { logout } from "../reducers/auth/actions";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid } from "@material-ui/core";
+import { Grid, Box } from "@material-ui/core";
 import { useFirestoreConnect } from "react-redux-firebase";
 
 const useStyles = makeStyles(theme => ({
@@ -194,6 +194,7 @@ const Content = ({
           isTasks={showTasks}
           valuesLength={[checked.length, list.length]}
         />
+        {list.length > 0 ? 
         <List
           list={list}
           handleEdit={showTasks ? handeEditTask : handleEdit}
@@ -201,7 +202,16 @@ const Content = ({
           handleChecked={handleChecked}
           handleDeleteList={handleDeleteList}
           checked={checked}
-        />
+        /> : 
+        <Box 
+          color="primary.main"
+          bgcolor="background.paper"
+          fontFamily="h6.fontFamily"
+          fontSize={{ xs: 'h4.fontSize', sm: 'h4.fontSize', md: 'h5.fontSize' }}
+          p={{ xs: 2, sm: 3, md: 4 }}
+          textAlign="center">
+            Empty list
+        </Box>}
       </Grid>
       {dialog.open && (
         <DialogWindow
