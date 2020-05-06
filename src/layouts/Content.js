@@ -23,6 +23,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const query = {
+  collection: "tasks",
+  orderBy: ["date", "desc"],
+  storeAs: "list"
+}
+
 const Content = ({
   addList,
   addTask,
@@ -46,27 +52,21 @@ const Content = ({
   useFirestoreConnect(() =>
     showTasks
       ? [
-          {
-            collection: "tasks",
+          Object.assign({...query}, {
             doc: userId,
             subcollections: [
               {
                 collection: "tasks",
                 where: [["listId", "==", showTasks]],
-                orderBy: ["date", "desc"]
               }
             ],
-            storeAs: "list"
-          }
+          })
         ]
       : [
-          {
-            collection: "tasks",
+          Object.assign({...query}, {
             doc: userId,
             subcollections: [{ collection: "list" }],
-            orderBy: ["date", "desc"],
-            storeAs: "list"
-          }
+          })
         ]
   );
 
